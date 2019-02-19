@@ -9,6 +9,10 @@ blue = (40,80,255)
 
 pygame.init()
 
+playerImg = pygame.image.load("daniel-headshot.png")
+enemyImg = pygame.image.load("definitely-not-daniel.png")
+bulletImg = pygame.image.load("si-bullet.gif")
+
 gameDisplay = pygame.display.set_mode((windowWidth,windowHeight))
 pygame.display.set_caption('Danial Invaders')
 
@@ -41,6 +45,10 @@ class Player(GameObject):
         self.direction = -1
     def stop_moving(self):
         self.direction = 0
+    def shoot(self):
+        # TODO:play sound
+        newBullet = Bullet(self.xcor + self.width / 2 - bulletImg.get_width() / 2, self.ycor - bulletImg.get_height(), bulletImg, 10)
+        bullets.append(newBullet)
 
 class Enemy(GameObject):
     def __init__(self, xcor, ycor, image, speed):
@@ -53,14 +61,21 @@ class Enemy(GameObject):
     def change_direction(self):
         self.direction *= -1
 
+class Bullet(GameObject):
+    def __init__(self, xcor, ycor, image, speed):
+        super().__init__(xcor, ycor, image, speed)
+    def move_up(self):
+        self.ycor -= self.speed
+
+
 clock = pygame.time.Clock()
 
-playerImg = pygame.image.load("daniel-headshot.png")
-enemyImg = pygame.image.load("definitely-not-daniel.png")
+
 
 player1 = Player(200, 870, playerImg, 5)
 
 enemies = []
+bullets = []
 
 for x in range(0,5):
     newEnemy = Enemy((enemyImg.get_width() + 5) * x + 1, 10, enemyImg, 2)
@@ -77,11 +92,13 @@ while player1.is_alive:
                 player1.move_left()
             elif event.key == pygame.K_RIGHT:
                 player1.move_right()
+            elif event.key == pygame.K_SPACE:
+                player1.shoot()
 
     gameDisplay.blit(gameDisplay, (0,0))
     gameDisplay.fill(black)
 
-# check all enimies to see if one has rached a wall
+    # check all enimies to see if one has rached a wall
     for enemy in enemies:
         if enemy.xcor <= 0 or enemy.xcor >= windowWidth - enemy.width:
             #since one enemy has reached a wall, change all enimies directions
@@ -96,7 +113,9 @@ while player1.is_alive:
         enemy.move_over()
         enemy.show()
 
-
+    for bullet in bullets:
+        bullet.move_up()
+        bullet.show()
 
     player1.show()
 
