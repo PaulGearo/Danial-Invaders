@@ -14,15 +14,25 @@ wall_bottom = windowHeight - game_bottom_margin - game_border_width
 
 black = (0,0,0)
 white = (255,255,255)
-blue = (0,0,255)
+blue = (80,80,255)
 
 pygame.init()
 
 # load game images
-playerImg = pygame.image.load("smol_daniel_emoji.jpg")
-enemyImg = pygame.image.load("smol_DefinitelyNotDaniel.jpg")
+playerImg = pygame.image.load("si-player.gif")
+enemyImg = pygame.image.load("si-enemy (1).gif")
 bulletImg = pygame.image.load("si-bullet.gif")
 backroundImg = pygame.image.load("si-background.gif")
+
+# load sounds
+laser_sound = pygame.mixer.Sound("LASER.WAV")
+explosion_sound = pygame.mixer.Sound("si-EXPLODE.WAV")
+#pygame.mixer.music.load("")
+#pygame.mixer.music.play(-1)
+
+
+title_font = pygame.font.SysFont('Arial', 40, True)
+score_font = pygame.font.SysFont("Arial", 26, True)
 
 gameDisplay = pygame.display.set_mode((windowWidth,windowHeight))
 pygame.display.set_caption('Danial Invaders')
@@ -48,6 +58,7 @@ class Player(GameObject):
         super().__init__(xcor, ycor, image, speed)
         self.is_alive = True
         self.direction = 0
+        self.score = 0
     def show(self):
         new_xcor = self.xcor + self.direction * self.speed
         if new_xcor < wall_left or new_xcor > wall_right - self.width:
@@ -62,9 +73,11 @@ class Player(GameObject):
     def stop_moving(self):
         self.direction = 0
     def shoot(self):
-        # TODO:play sound
+        laser_sound.play()
         newBullet = Bullet(self.xcor + self.width / 2 - bulletImg.get_width() / 2, self.ycor - bulletImg.get_height(), bulletImg, 10)
         bullets.append(newBullet)
+    def change_score(self, amount_to_change_by):
+        self.score += amount_to_change_by    
 
 class Enemy(GameObject):
     def __init__(self, xcor, ycor, image, speed):
@@ -120,6 +133,10 @@ while player1.is_alive:
 
     gameDisplay.blit(gameDisplay, (0,0))
     gameDisplay.fill(black)
+    title_text = title_font.render('DANIAL INVADERS', False, blue)
+    gameDisplay.blit(title_text, (windowWidth / 2 - title_text.get_width() / 2, 0))
+    score_text = score_font.render( 'FAKERS SLAIN:' + str(player1.score), False, white)
+    gameDisplay.blit(score_text,(wall_left, wall_bottom + game_border_width))
     pygame.draw.rect(gameDisplay, white, (game_side_margin, game_top_margin, windowWidth - game_side_margin * 2, windowHeight - game_top_margin - game_bottom_margin))
     gameDisplay.blit(backroundImg, (wall_left, wall_top), (0, 0, wall_right - wall_left, wall_bottom - wall_top))
 
@@ -133,10 +150,13 @@ while player1.is_alive:
         for enemy in enemies:
             # if the bullet has collided with an enemy, romove both from their arrays
             if bullet.collides_with(enemy):
+                explosion_sound.play()
                 enemies.remove(enemy)
                 bullets.remove(bullet)
+                player1.change_score(1)
                 break
            
+
 
     # check all enimies to see if one has rached a wall
     for enemy in enemies:
@@ -147,6 +167,10 @@ while player1.is_alive:
                 e.move_down()
             # since one enemy has reached a wall, stop checking the others
             break
+        
+        if enemy.collides_with(player1):
+           player1.is_alive = False
+            
 
      # move and show all enemies       
     for enemy in enemies:
@@ -162,5 +186,18 @@ while player1.is_alive:
     
     pygame.display.update()
     clock.tick(60)
+    
+show_final_screen = True
+while show_final_screen:
+    gameDisplay.blit(score_text, (windowWidth / 2 - score_text.get_width() / 2, windowHeight / 2))
+
+    pygame.display.update()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            show_final_screen = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                show_final_screen = False
 
 pygame.quit()
