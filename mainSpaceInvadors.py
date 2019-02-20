@@ -114,6 +114,10 @@ while player1.is_alive:
             elif event.key == pygame.K_SPACE:
                 player1.shoot()
 
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                player1.stop_moving()
+
     gameDisplay.blit(gameDisplay, (0,0))
     gameDisplay.fill(black)
     pygame.draw.rect(gameDisplay, white, (game_side_margin, game_top_margin, windowWidth - game_side_margin * 2, windowHeight - game_top_margin - game_bottom_margin))
