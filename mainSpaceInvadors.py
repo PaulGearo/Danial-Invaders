@@ -93,7 +93,7 @@ while player1.is_alive:
 
     gameDisplay.blit(gameDisplay, (0,0))
     gameDisplay.fill(black)
-    title_text = title_font.render('DANIAL INVADERS', False, blue)
+    title_text = title_font.render('DANIEL INVADERS', False, blue)
     gameDisplay.blit(title_text, (windowWidth / 2 - title_text.get_width() / 2, 0))
     score_text = score_font.render( 'FAKERS SLAIN:' + str(player1.score), False, white)
     gameDisplay.blit(score_text,(wall_left, wall_bottom + game_border_width))
