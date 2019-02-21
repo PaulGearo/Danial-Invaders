@@ -32,7 +32,7 @@ backroundImg = pygame.image.load("media\\si-background.gif")
 # load sounds
 laser_sound = pygame.mixer.Sound("media\\LASER.WAV")
 laser_sound.set_volume(0.1)
-explosion_sound = pygame.mixer.Sound("media\\si-EXPLODE.WAV")
+explosion_sound = pygame.mixer.Sound("media\\si-oof copy.wav")
 explosion_sound.set_volume(0.3)
 pygame.mixer.music.load("media\\The Killers - Human _8-bit style_.mp3")
 pygame.mixer.music.play(-1)
